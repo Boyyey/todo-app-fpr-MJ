@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  birthday  String?  // To store birthday as YYYY-MM-DD
+  notes     Note[]
+  todos     Todo[]
+  goals     Goal[]
+
+  // Fields for password reset
+  passwordResetToken       String?   @unique
+  passwordResetTokenExpiry DateTime?
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  content   String
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Todo {
+  id        String   @id @default(cuid())
+  content   String
+  done      Boolean  @default(false)
+  date      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Goal {
+  id        String   @id @default(cuid())
+  content   String
+  category  String?
+  done      Boolean  @default(false)
+  targetDate DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
